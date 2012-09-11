@@ -1,12 +1,5 @@
 *.py[co]
 
-# pycharm project files
-.idea
-
-# 
-*.cmd
-temp
-
 # Packages
 *.egg
 *.egg-info

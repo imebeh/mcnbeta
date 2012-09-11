@@ -1,0 +1,42 @@
+$def with (title, body, newsCount, r, time, stTime)
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+$# author: gmebeh
+$# coding: utf-8
+$# 必须使用crlf换行，否则veer的浏览器显示乱码
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta content="True" name="HandheldFriendly" />
+  <title>$:title</title>
+  <!--<meta name="description" content="" />-->
+  <!--<style></style>-->
+</head>
+<body>
+  <a href="/feed?r=${r}" target="_blank">订阅</a>
+  <a href="/">首页</a>
+  <a href="/count/5">最新的5个</a>
+  <a href="/start5count5">第6个到第10个</a>
+  <a href="/update/1">更新</a>
+  </br>
+  <p>已缓存${newsCount}条新闻，页面生成时间：<span id="pageTime"></span>s</p>
+  $for a in body:
+    <div id="news_block">
+      <div id="news_title"><h1>$:{a['title']}</h1></div>
+      <div id="news_link">
+        <a href="http://www.cnbeta.com/articles/$:{a['id']}.htm" target="_blank">查看原文</a> 
+        <a href="http://m.cnbeta.com/hcomment.php?sid=$:{a['id']}" target="_blank">热门评论</a> 
+        <a href="http://m.cnbeta.com/mcomment.php?sid=$:{a['id']}" target="_blank">全部评论</a>
+        <a href="/$:{a['id']}/previous">上一篇</a>
+        <a href="/$:{a['id']}/next">下一篇</a>
+      </div>
+      <div id="news_content"><p>$:{a['content']}</p></div>
+      <br/>
+      <div id="news_HComment"><p>$:{a['hot']}</p></div>
+    </div>
+  <script language="JavaScript">
+    document.getElementById("pageTime").innerHTML = "${time.time()-stTime}";
+  </script>
+  <!--footer
+  -->
+</body>
+</html>
