@@ -19,17 +19,7 @@ class cnBeta():
         #    'hot':      ''  #热门评论
         #}
     }
-    #rePage              = re.compile(ur'(?<=sid=)[0-9]+(?=">)|(?<=[0-9]{5}">)[^\n]+(?=</a><br)')
-    #reTitle             = re.compile(ur'(?<=<title>).*(?=_cnBeta手机版</title>)')
-    #reTime              = re.compile(ur'(?<=新闻发布日期：</b>).*(?=<br/><b>)')
-    #reComment           = re.compile(ur'(?<=\n\t\t \n\t\t).*(?=<br/>\n\t\t \n      )', re.S + re.U)
-    #reCommentContent    = re.compile(ur'(?<=\t   \n\t   ).*(?=\n)')
-    #reCommentIndex      = re.compile(ur'(?<=<strong>).*(?=</strong>)')
-    #reCommentTime       = re.compile(ur'(?<=<br/>).*(?=</span><br/>\n)')
-    #reCommentVoteUp     = re.compile(ur'(?<=\(<span >)[0-9]+(?=</span>\) )')
-    #reCommentVoteDown   = re.compile(ur'(?<=\(<span >)[0-9]+(?=</span>\);)')
-    reContent           = re.compile(ur'(?<=返回首页</a><br/><br/>).*(?=<a href="hcomment.php\?)',re.S + re.U)
-    
+    reComment           = re.compile(ur'(?<=\n\t\t \n\t\t).*(?=<br/>\n\t\t \n      )', re.S + re.U)    
     rePage              = re.compile(ur'sid=([0-9]{4,7})">([^\n]+?)</a>')
     reTitle             = re.compile(ur'</head>\n<b>([^\n]+?)</b>')
     reTime              = re.compile(ur'<b>文章发布日期：</b>([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2})<br/>')
@@ -144,28 +134,6 @@ class cnBeta():
                         }
                     })
                 self.updateNewsById(nid)
-
-
-            # for i in range(1, c, 2):
-            #     print '\t page %s: news %s of %s' % (page, (i+1)/2, c/2)
-            #     if self.News.has_key(m[i-1]):
-            #         self.News[m[i-1]].update({
-            #             'id': int(m[i-1]),
-            #             'title': m[i]
-            #         })
-            #     else:
-            #         self.News.update({
-            #             unicode(m[i-1]) : {
-            #                 'id': int(m[i-1]),
-            #                 'title': m[i],
-            #                 'time': None,
-            #                 'content': None,
-            #                 'comment': None,
-            #                 'hot': None
-            #             }
-            #         })
-            #     self.updateNewsById(m[i-1])
-                #if i>0: return True
             self.TitlesPerPage= c
             return True
         return False
