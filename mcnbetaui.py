@@ -15,21 +15,28 @@ x= mcnbeta.cnBeta()
 urls = (
     '/feed', 'feed',
     '/update/(\d*)', 'update',
+    '/u/(\d*)', 'update',
     '/count/(\d*)', 'webUI',
-    '/(\d*)/(next|previous|)','pageMove',
+    '/c/(\d*)', 'webUI',
+    '/(\d*)/(next|previous|update|n|p|u|)','pageMove',
     '/start(\d*?)count(\d*?)','randomPages',
     '/s(\d*?)c(\d*?)','randomPages',
     '/(\d*)', 'webUI'
 )
 app = web.application(urls, globals())
 
-def renderPages(pages):
+def renderPages(pages, keywords={u'小米':u'粗粮', u'Xiaomi':u'粗粮', u'米聊':u'粗聊', u'MIUI':u'粗UI', u'360':u'数字'}):
     stTime= time.time()
     render = web.template.render('templates')
     for a in pages:
         a.update({
             'content': _replaceImgWithIframe(a['content'])
         })
+        for k in keywords.keys():
+            a.update({  
+                'content': a['content'].replace(k, keywords[k]) if a['content'] and (a['content']!=True) else u'',
+                'title'  : a['title'].replace(k, keywords[k]) if a['title'] else u''
+            })
 
     return render.webui(
         title= u'cnBeta 全文' if len(pages)>1 else pages[0]['title'] , 
@@ -37,8 +44,24 @@ def renderPages(pages):
         newsCount= len(x.News.keys()), 
         r= random.random(), 
         time= time, 
-        stTime= stTime,
+        stTime= stTime
     )
+
+def _update(page):
+    if int(page)>9999:
+        #g= x.updateNewsById
+        print 'update news id: %s' % page
+        #threading.Thread(target= g, args= (page)).start()
+        x.updateNewsById(page)
+        return web.redirect('/%s?r=%s' % (page, random.random()))
+    else:
+        g= x.updateNews
+        a= []
+        a.append(page)
+        print 'update page: %s' % page
+        threading.Thread(target= g, args= a).start()
+        return web.redirect('/?r=%s' % random.random())
+
 def _findImgUrl(ret, content):
     reImage= re.compile(ur'<img.+(?<=src="http://img.cnbeta.com)(.+?)(?=")', re.I)
     if not content: return None
@@ -92,6 +115,8 @@ class pageMove:
             ret= x.Next(article)
         elif action=='previous':
             ret= x.Previous(article)
+        elif action=='update':
+            return _update(article)
         else:
             ret= x.getNewsById(article)
 
@@ -100,11 +125,7 @@ class pageMove:
 class update:
     def GET(self, page= 1):
         # TODO: print waiting info.
-        print 'page: %s' % page
-        t= threading.Thread(target=x.updateNews, args= (page))
-        t.start()
-        #x.updateNews(page= page )
-        return web.redirect('/?r=%s' % random.random())
+        _update(page)
 
 class feed:
     def GET(self):

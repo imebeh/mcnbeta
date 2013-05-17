@@ -19,16 +19,24 @@ class cnBeta():
         #    'hot':      ''  #热门评论
         #}
     }
-    rePage              = re.compile(ur'(?<=sid=)[0-9]+(?=">)|(?<=[0-9]{5}">)[^\n]+(?=</a><br)')
-    reTitle             = re.compile(ur'(?<=<card title=").*(?="><p><a href)')
-    reTime              = re.compile(ur'(?<=新闻发布日期：</b>).*(?=<br/><b>)')
-    reComment           = re.compile(ur'(?<=\n\t\t \n\t\t).*(?=<br/>\n\t\t \n      )', re.S + re.U)
+    #rePage              = re.compile(ur'(?<=sid=)[0-9]+(?=">)|(?<=[0-9]{5}">)[^\n]+(?=</a><br)')
+    #reTitle             = re.compile(ur'(?<=<title>).*(?=_cnBeta手机版</title>)')
+    #reTime              = re.compile(ur'(?<=新闻发布日期：</b>).*(?=<br/><b>)')
+    #reComment           = re.compile(ur'(?<=\n\t\t \n\t\t).*(?=<br/>\n\t\t \n      )', re.S + re.U)
     #reCommentContent    = re.compile(ur'(?<=\t   \n\t   ).*(?=\n)')
     #reCommentIndex      = re.compile(ur'(?<=<strong>).*(?=</strong>)')
     #reCommentTime       = re.compile(ur'(?<=<br/>).*(?=</span><br/>\n)')
     #reCommentVoteUp     = re.compile(ur'(?<=\(<span >)[0-9]+(?=</span>\) )')
     #reCommentVoteDown   = re.compile(ur'(?<=\(<span >)[0-9]+(?=</span>\);)')
     reContent           = re.compile(ur'(?<=返回首页</a><br/><br/>).*(?=<a href="hcomment.php\?)',re.S + re.U)
+    
+    rePage              = re.compile(ur'sid=([0-9]{4,7})">([^\n]+?)</a>')
+    reTitle             = re.compile(ur'</head>\n<b>([^\n]+?)</b>')
+    reTime              = re.compile(ur'<b>文章发布日期：</b>([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2})<br/>')
+    #reComment           = re.compile(ur'<br/>\n\n\t\t\n(.*)\t\n\t<br/>\n', re.S + re.U)
+    reContent           = re.compile(ur'</script><br>(.*?)<script type="text/javascript">',re.DOTALL)
+    
+    
     request = BasicTools().request
 
     def __init__(self, url= r'http://m.cnbeta.com'):
@@ -43,6 +51,9 @@ class cnBeta():
             r= self.reContent.findall(html)
             t= self.reTitle.findall(html)
             e= self.reTime.findall(html)
+
+            #print r,t,e
+
             if not self.News.has_key(id):
                 self.News.update({
                     id : {
@@ -54,7 +65,7 @@ class cnBeta():
             self.News[id].update({
                 'time'   : e[0] if e else None,
                 'content': r[0] if r else None,
-                'title'  : t[0].split(u'_cnBeta手机版')[0] if t else None
+                'title'  : t[0] if t else None
             })
             return True
         return False
@@ -108,27 +119,54 @@ class cnBeta():
             if not m:
                 return False
             c=len(m)
-            for i in range(1, c, 2):
-                print '\t page %s: news %s of %s' % (page, (i+1)/2, c/2)
-                if self.News.has_key(m[i-1]):
-                    self.News[m[i-1]].update({
-                        'id': int(m[i-1]),
-                        'title': m[i]
+            i=0
+            for x in m:
+                i+=1
+                nid= int(x[0])
+                title=x[1]
+
+                print '\t page %s: news %s of %s\n\t  %s' % (page, i, c, title)
+
+                if self.News.has_key(nid):
+                    self.News[nid].update({
+                        'id': nid,
+                        'title': title
                     })
                 else:
                     self.News.update({
-                        unicode(m[i-1]) : {
-                            'id': int(m[i-1]),
-                            'title': m[i],
+                        unicode(nid) : {
+                            'id': nid,
+                            'title': title,
                             'time': None,
                             'content': None,
                             'comment': None,
                             'hot': None
                         }
                     })
-                self.updateNewsById(m[i-1])
+                self.updateNewsById(nid)
+
+
+            # for i in range(1, c, 2):
+            #     print '\t page %s: news %s of %s' % (page, (i+1)/2, c/2)
+            #     if self.News.has_key(m[i-1]):
+            #         self.News[m[i-1]].update({
+            #             'id': int(m[i-1]),
+            #             'title': m[i]
+            #         })
+            #     else:
+            #         self.News.update({
+            #             unicode(m[i-1]) : {
+            #                 'id': int(m[i-1]),
+            #                 'title': m[i],
+            #                 'time': None,
+            #                 'content': None,
+            #                 'comment': None,
+            #                 'hot': None
+            #             }
+            #         })
+            #     self.updateNewsById(m[i-1])
                 #if i>0: return True
-            self.TitlesPerPage= c/2
+            self.TitlesPerPage= c
             return True
         return False
 
@@ -175,8 +213,13 @@ class cnBeta():
 
     def getNewsById(self, id):
         if self.News.has_key(id):
+            if self.News[id]['content']==True:
+                self.updateNewsById(id)
             return self.News[id]
         else:
+            r= self.Newest()
+            if r['content']==True:
+                self.updateNewsById(r['id'])
             return self.Newest()
 
     def getNewestId(self):
@@ -213,7 +256,7 @@ class cnBeta():
 
 if __name__ == "__main__":
     x= cnBeta()
-    #x.updateNewsById(203394)
+    x.updateNewsById(203394)
     max_page= raw_input(u'max page: ')
     if not max_page.isdigit(): max_page= 1
     max_page= int(max_page)
