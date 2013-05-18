@@ -33,6 +33,7 @@ $# 必须使用crlf换行，否则veer的浏览器显示乱码
     $for a in body:
       <div id="news_block">
         <div id="news_title"><h1>$:{a['title']}</h1></div>
+        <div id="news_time">新闻发布时间：$:{a['time']}</div><br>
         <div id="news_link">
           <a href="http://www.cnbeta.com/articles/$:{a['id']}.htm" target="_blank">查看原文</a>
           <a href="http://m.cnbeta.com/hcomment.php?sid=$:{a['id']}" target="_blank">热门评论</a>
