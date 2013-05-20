@@ -24,7 +24,7 @@ class cnBeta():
     reTitle             = re.compile(ur'</head>\n<b>([^\n]+?)</b>')
     reTime              = re.compile(ur'<b>文章发布日期：</b>([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2})<br/>')
     #reComment           = re.compile(ur'<br/>\n\n\t\t\n(.*)\t\n\t<br/>\n', re.S + re.U)
-    reContent           = re.compile(ur'</script><br>(.*?)<script type="text/javascript">',re.DOTALL)
+    reContent           = re.compile(ur'</script><br>(.*?)<script type="text/javascript">\n/\*手机版链接\*/',re.DOTALL)
     
     
     request = BasicTools().request
