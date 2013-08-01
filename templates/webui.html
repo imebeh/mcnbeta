@@ -18,8 +18,8 @@ $# 必须使用crlf换行，否则veer的浏览器显示乱码
   <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="/static/favicon.ico" />
   <link rel="stylesheet" type="text/css" media="screen"  href="/static/css/index.css" />
   <link rel="alternate" type="application/rss+xml" title="RSS 2.0 全文+热评" href="/feed" />
-  <link rel="prev" title="上一页" href="/$:{body[0]['id']}/previous?r=${r}" />
-  <link rel="next" title="下一页" href="/$:{body[0]['id']}/next?r=${r}" />
+  <link rel="prev" title="上一页" href="/$:{body[0]['sid']}/previous?r=${r}" />
+  <link rel="next" title="下一页" href="/$:{body[0]['sid']}/next?r=${r}" />
 </head>
 <body>
   <div>
@@ -35,12 +35,12 @@ $# 必须使用crlf换行，否则veer的浏览器显示乱码
         <div id="news_title"><h1>$:{a['title']}</h1></div>
         <div id="news_time">新闻发布时间：$:{a['time']}</div><br>
         <div id="news_link">
-          <a href="http://www.cnbeta.com/articles/$:{a['id']}.htm" target="_blank">查看原文</a>
-          <a href="http://m.cnbeta.com/hcomment.php?sid=$:{a['id']}" target="_blank">热门评论</a>
-          <a href="http://m.cnbeta.com/mcomment.php?sid=$:{a['id']}" target="_blank">全部评论</a>
-          <a href="/$:{a['id']}/previous?r=${r}">上一页</a>
-          <a href="/$:{a['id']}/next?r=${r}">下一页</a>
-          <a href="/update/$:{a['id']}?r=${r}">刷新本条</a>
+          <a href="http://www.cnbeta.com/articles/$:{a['sid']}.htm" target="_blank">查看原文</a>
+          <a href="http://m.cnbeta.com/hotcomments.htm?id=$:{a['sid']}" target="_blank">热门评论</a>
+          <a href="http://m.cnbeta.com/comments.htm?id=$:{a['sid']}" target="_blank">全部评论</a>
+          <a href="/$:{a['sid']}/previous?r=${r}">上一页</a>
+          <a href="/$:{a['sid']}/next?r=${r}">下一页</a>
+          <a href="/update/$:{a['sid']}?r=${r}">刷新本条</a>
         </div>
         <div id="news_content">
           <p>$:{a['content']}</p>
